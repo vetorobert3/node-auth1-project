@@ -22,6 +22,7 @@ router.post('/login', async (req, res) => {
   try {
     const user = await Users.findBy({username}).first();
     if (user && bcrypt.compareSync(password, user.password)) {
+      req.session.user = user;
       res.status(200).json({message: 'welcome'});
     } else {
       res.status(401).json({message: 'invalid'})
@@ -33,7 +34,7 @@ router.post('/login', async (req, res) => {
 });
 
 router.get('/logout', (req, res) => {
-  if (req.sessions) {
+  if (req.session) {
     req.session.destroy(err => {
       if (err) {
         res.send(`can't log out`)
